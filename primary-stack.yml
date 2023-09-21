@@ -1,0 +1,88 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: AWS requirements for github and terraform automation
+
+Parameters:
+  TfBucketName:
+    Type: String
+    Description: Terraform states new bucket name
+  GitHubOrg:
+    Type: String
+    Description: Github organization or username (case sensitive).
+  GitHubRepositoryName:
+    Type: String
+    Description: Github repository name (case sensitive).
+    Default: "*"
+  GithubRoleName:
+    Type: String
+    Description: IAM Role for github actions
+    Default: "github-actions"
+  OIDCProviderArn:
+    Type: String
+    Description: (Optional) Github OIDC provider arn.
+    Default: ""
+  OIDCAudience:
+    Type: String
+    Description: configure-aws-credentials audience.
+    Default: "sts.amazonaws.com"
+
+Conditions:
+  CreateOIDCProvider: !Equals 
+    - !Ref OIDCProviderArn
+    - ""
+
+Resources:
+  TfBucket:
+    Type: 'AWS::S3::Bucket'
+    Properties:
+      BucketName: !Ref TfBucketName
+      LifecycleConfiguration:
+        Rules:
+          - Id: DeleteAfterOneDay
+            Status: Enabled
+            ExpirationInDays: 1
+
+  GithubRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: !Ref GithubRoleName
+      AssumeRolePolicyDocument:
+        Statement:
+          - Effect: Allow
+            Action: sts:AssumeRoleWithWebIdentity
+            Principal:
+              Federated: !If 
+                - CreateOIDCProvider
+                - !Ref GithubOidc
+                - !Ref OIDCProviderArn
+            Condition:
+              StringEquals:
+                token.actions.githubusercontent.com:aud: !Ref OIDCAudience
+              StringLike:
+                token.actions.githubusercontent.com:sub: !Sub repo:${GitHubOrg}/${GitHubRepositoryName}:*
+
+  GithubRolePolicy:
+    Type: 'AWS::IAM::Policy'
+    Properties:
+      PolicyName: AdminPolicy
+      PolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Action: '*'
+            Resource: '*'
+      Roles:
+        - !Ref GithubRole
+
+  GithubOidc:
+    Type: AWS::IAM::OIDCProvider
+    Condition: CreateOIDCProvider
+    Properties:
+      Url: https://token.actions.githubusercontent.com
+      ClientIdList: 
+        - sts.amazonaws.com
+      ThumbprintList:
+        - ffffffffffffffffffffffffffffffffffffffff
+
+Outputs:
+  Role:
+    Value: !GetAtt GithubRole.Arn
