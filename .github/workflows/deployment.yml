@@ -37,4 +37,4 @@ jobs:
       
       - run: bash init.sh
 
-      - run: terraform plan
+      - run: terraform apply --auto-approve
