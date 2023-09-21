@@ -8,6 +8,9 @@ on:
 
 env:
   AWS_DEFAULT_REGION: us-east-1
+  TERRAFORM_BACKEND_BUCKET: hangarlabs-tfstate
+  TERRAFORM_BACKEND_KEY: requirements-aws.tfstate
+  TERRAFORM_BACKEND_REGION: us-east-1
 
 permissions:
   id-token: write
