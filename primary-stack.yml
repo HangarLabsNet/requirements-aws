@@ -14,7 +14,7 @@ Parameters:
   GithubRoleName:
     Type: String
     Description: IAM Role for github actions
-    Default: "github-actions"
+    Default: "github-actions-requirements"
   OIDCProviderArn:
     Type: String
     Description: (Optional) Github OIDC provider arn.
@@ -78,5 +78,5 @@ Resources:
         - ffffffffffffffffffffffffffffffffffffffff
 
 Outputs:
-  Role:
+  GithubRole:
     Value: !GetAtt GithubRole.Arn
