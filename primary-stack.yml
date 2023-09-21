@@ -34,11 +34,6 @@ Resources:
     Type: 'AWS::S3::Bucket'
     Properties:
       BucketName: !Ref TfBucketName
-      LifecycleConfiguration:
-        Rules:
-          - Id: DeleteAfterOneDay
-            Status: Enabled
-            ExpirationInDays: 1
 
   GithubRole:
     Type: AWS::IAM::Role
