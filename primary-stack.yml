@@ -11,7 +11,6 @@ Parameters:
   GitHubRepositoryName:
     Type: String
     Description: Github repository name (case sensitive).
-    Default: "*"
   GithubRoleName:
     Type: String
     Description: IAM Role for github actions
