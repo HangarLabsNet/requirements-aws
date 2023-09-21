@@ -1,4 +1,4 @@
-rm -rf .terraform*
+rm -rf .terraform
 
 terraform init \
   -backend-config="bucket=$TERRAFORM_BACKEND_BUCKET" \
