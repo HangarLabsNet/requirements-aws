@@ -1,4 +1,4 @@
-name: Production AWS ECS Deployment
+name: AWS Deployment
 
 on:
   push:
@@ -7,7 +7,7 @@ on:
       - tf
 
 env:
-  AWS_REGION: us-east-1
+  AWS_DEFAULT_REGION: us-east-1
 
 permissions:
   id-token: write
@@ -25,7 +25,7 @@ jobs:
         uses: aws-actions/configure-aws-credentials@v3
         with:
           role-to-assume: ${{ secrets.AWS_GITHUB_ROLE }}
-          aws-region: ${{ env.AWS_REGION }}
+          aws-region: ${{ env.AWS_DEFAULT_REGION }}
 
       - uses: hashicorp/setup-terraform@v2
         with:
