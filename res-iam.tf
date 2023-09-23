@@ -1,4 +1,6 @@
 module "github_role_generic" {
+  # Roles IAM que pueden asumir los jobs de github para crear recursos
+
   source = "./modules/iam-oidc"
 
   for_each = local.roles_params
